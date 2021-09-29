@@ -512,6 +512,10 @@ int J1772EVSEController::SetBacklightType(uint8_t t,uint8_t update)
   return 0;
 }
 #endif // RGBLCD
+
+*/
+/* Fix e-Golf sleep */
+
 void J1772EVSEController::Enable()
 {
   if ((m_EvseState == EVSE_STATE_DISABLED)||
@@ -527,9 +531,21 @@ void J1772EVSEController::Enable()
     
     m_PrevEvseState = EVSE_STATE_DISABLED;
     m_EvseState = EVSE_STATE_UNKNOWN;
+	
+	/* e-Golf Modification */
+	wdt_disable(); // Stop WatchDog
+	m_Pilot.SetState(PILOT_STATE_N12);
+	 delay(1000); // Pause
     m_Pilot.SetState(PILOT_STATE_P12);
+	 delay(1000); // Pause
+	m_Pilot.SetState(PILOT_STATE_N12);
+	 delay(1000); // Pause
+	m_Pilot.SetState(PILOT_STATE_P12);
+	WDT_ENABLE();	
   }
 }
+
+
 
 void J1772EVSEController::Disable()
 {
